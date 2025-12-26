@@ -58,7 +58,6 @@ from linopy.io import (
 )
 from linopy.matrices import MatrixAccessor
 from linopy.objective import Objective
-from linopy.remote import OetcHandler, RemoteHandler
 from linopy.solver_capabilities import SolverFeature, solver_supports
 from linopy.solvers import (
     IO_APIS,
@@ -1122,7 +1121,6 @@ class Model:
         sanitize_zeros: bool = True,
         sanitize_infinities: bool = True,
         slice_size: int = 2_000_000,
-        remote: RemoteHandler | OetcHandler = None,  # type: ignore
         progress: bool | None = None,
         **solver_options: Any,
     ) -> tuple[str, str]:
@@ -1208,34 +1206,6 @@ class Model:
             raise ValueError(
                 f"Keyword argument `io_api` has to be one of {IO_APIS} or None"
             )
-
-        if remote is not None:
-            if isinstance(remote, OetcHandler):
-                solved = remote.solve_on_oetc(self)
-            else:
-                solved = remote.solve_on_remote(
-                    self,
-                    solver_name=solver_name,
-                    io_api=io_api,
-                    problem_fn=problem_fn,
-                    solution_fn=solution_fn,
-                    log_fn=log_fn,
-                    basis_fn=basis_fn,
-                    warmstart_fn=warmstart_fn,
-                    keep_files=keep_files,
-                    sanitize_zeros=sanitize_zeros,
-                    **solver_options,
-                )
-
-            self.objective.set_value(solved.objective.value)
-            self.status = solved.status
-            self.termination_condition = solved.termination_condition
-            for k, v in self.variables.items():
-                v.solution = solved.variables[k].solution
-            for k, c in self.constraints.items():
-                if "dual" in solved.constraints[k]:
-                    c.dual = solved.constraints[k].dual
-            return self.status, self.termination_condition
 
         if len(available_solvers) == 0:
             raise RuntimeError("No solver installed.")
