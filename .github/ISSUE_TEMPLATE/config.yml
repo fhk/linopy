@@ -1,1 +1,9 @@
+# SPDX-FileCopyrightText: PyPSA Contributors
+#
+# SPDX-License-Identifier: MIT
+
 blank_issues_enabled: true
+contact_links:
+- name: PyPSA Discord server
+  url: https://discord.gg/AnuJBk23FU
+  about: Please ask and answer general usage questions here.

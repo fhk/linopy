@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: PyPSA Contributors
+#
+# SPDX-License-Identifier: MIT
+
 # For most projects, this workflow file will not need changing; you simply need
 # to commit it to your repository.
 #
@@ -13,11 +17,11 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
   schedule:
-    - cron: '19 21 * * 6'
+  - cron: '36 6 * * 4'
 
 jobs:
   analyze:

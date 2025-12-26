@@ -30,13 +30,11 @@ dependencies = [
     "scipy",
     "bottleneck",
     "toolz",
-    "numexpr",
     "xarray>=2024.2.0",
     "dask>=0.18.0",
     "polars",
     "tqdm",
     "deprecation",
-    "google-cloud-storage",
     "requests"
 ]
 

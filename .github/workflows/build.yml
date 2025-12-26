@@ -1,0 +1,122 @@
+# SPDX-FileCopyrightText: PyPSA Contributors
+#
+# SPDX-License-Identifier: MIT
+
+name: Build Wheel
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build Python wheel
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Required to create releases and push to gh-pages
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0  # Required for setuptools_scm to determine version
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.12'
+
+    - name: Install build dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install build
+
+    - name: Build wheel and source distribution
+      run: python -m build
+
+    - name: Get wheel filename
+      id: wheel
+      run: |
+        echo "filename=$(ls dist/*.whl | xargs -n 1 basename)" >> $GITHUB_OUTPUT
+
+    - name: Upload wheel artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: linopy-wheel
+        path: dist/*.whl
+        retention-days: 90
+
+    - name: Upload source distribution artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: linopy-sdist
+        path: dist/*.tar.gz
+        retention-days: 90
+
+    - name: Create/Update Latest Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: latest-build
+        name: Latest Build
+        body: |
+          Automated build from master branch.
+
+          **Commit:** ${{ github.sha }}
+          **Date:** ${{ github.event.head_commit.timestamp }}
+
+          **Wheel file:** ${{ steps.wheel.outputs.filename }}
+
+          Download the wheel file below to install:
+          ```bash
+          pip install https://fhk.github.io/linopy/wheels/${{ steps.wheel.outputs.filename }}
+          ```
+        files: |
+          dist/*.whl
+          dist/*.tar.gz
+        prerelease: true
+        make_latest: false
+
+    - name: Prepare GitHub Pages deployment
+      run: |
+        mkdir -p gh-pages/wheels
+        cp dist/*.whl gh-pages/wheels/
+
+        # Create main index page
+        cat > gh-pages/index.html << 'EOF'
+        <!DOCTYPE html>
+        <html>
+        <head><title>linopy - Latest Build</title></head>
+        <body>
+        <h1>linopy - Latest Build</h1>
+        <p>Install the latest development version:</p>
+        <pre>pip install https://fhk.github.io/linopy/wheels/${{ steps.wheel.outputs.filename }}</pre>
+        <p><a href="wheels/">Browse all wheel files</a></p>
+        </body>
+        </html>
+        EOF
+
+        # Create a simple index page for the wheels directory
+        cat > gh-pages/wheels/index.html << 'EOF'
+        <!DOCTYPE html>
+        <html>
+        <head><title>linopy Wheels</title></head>
+        <body>
+        <h1>linopy Wheel Files</h1>
+        <p>Available wheels:</p>
+        <ul>
+        EOF
+        for file in gh-pages/wheels/*.whl; do
+          filename=$(basename "$file")
+          echo "<li><a href=\"$filename\">$filename</a></li>" >> gh-pages/wheels/index.html
+        done
+        cat >> gh-pages/wheels/index.html << 'EOF'
+        </ul>
+        </body>
+        </html>
+        EOF
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./gh-pages
+        force_orphan: true

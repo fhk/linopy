@@ -1,12 +1,18 @@
+# SPDX-FileCopyrightText: PyPSA Contributors
+#
+# SPDX-License-Identifier: MIT
+
 name: Bug Report
 description: Create a report if something doesn't work quite right.
-labels: ["bug", "needs triage"]
+labels: ["needs triage"]
+type: "Bug"
 
 body:
 - type: markdown
   attributes:
     value: |
       Thanks for taking the time to fill out this bug report!
+      Please do not post usage questions here. Ask them on the [PyPSA Discord server](https://discord.gg/AnuJBk23FU).
 
 - type: checkboxes
   id: checks
@@ -15,10 +21,10 @@ body:
     options:
     - label: >
         I have confirmed this bug exists on the lastest
-        [release](https://github.com/pypsa/linopy/releases) of Linopy.
+        [release](https://github.com/pypsa/pypsa/releases) of PyPSA.
     - label: >
         I have confirmed this bug exists on the current
-        [`master`](https://github.com/pypsa/linopy/tree/master) branch of Linopy.
+        [`master`](https://github.com/pypsa/pypsa/tree/master) branch of PyPSA.
 
 - type: textarea
   id: problem
@@ -38,9 +44,9 @@ body:
     description: >
       Please provide a minimal reproduciable example. See how to [craft minimal bug reports](https://matthewrocklin.com/minimal-bug-reports).
     placeholder: >
-      from linopy import Model
+      import pypsa
 
-      m = Model()
+      n = pypsa.Network()
 
     render: python
 
@@ -58,7 +64,7 @@ body:
   attributes:
     label: Installed Versions
     description: >
-      Please share information on your environment. Paste the output below.  For conda ``conda env export`` and for pip ``pip freeze``.
+      Please share information on your environment. Paste the output below.  For conda `conda env export` and for pip `pip freeze`.
     value: >
       <details>
 
