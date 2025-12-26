@@ -28,7 +28,6 @@ dependencies = [
     "numpy; python_version > '3.10'",
     "numpy<2; python_version <= '3.10'",
     "scipy",
-    "bottleneck",
     "toolz",
     "xarray>=2024.2.0",
     "dask>=0.18.0",
