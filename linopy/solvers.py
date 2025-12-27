@@ -70,14 +70,6 @@ This module provides integration with the highs-js solver for use in
 browser environments via Pyodide.
 """
 
-from __future__ import annotations
-
-import logging
-from typing import TYPE_CHECKING
-
-import numpy as np
-import pandas as pd
-
 if TYPE_CHECKING:
     from linopy import Model
 
